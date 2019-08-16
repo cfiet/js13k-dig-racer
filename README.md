@@ -12,3 +12,8 @@ Run
 make
 ```
 
+To build final bundle run
+```sh
+make clean && ENV=prod make dist
+```
+
