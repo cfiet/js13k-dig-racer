@@ -8,11 +8,13 @@ JS_TARGET_NAME=app.min.js
 JS_TARGET=$(JS_TARGET_DIR)/$(JS_TARGET_NAME)
 JS_SRC=$(wildcard ./src/*.js ./src/*/*.js)
 
+DIST_TARGET_SIZE=13312
+
 JAVA=java
 
 .DEFAULT_GOAL := build
 
-.PHONY: clean distclean
+.PHONY: clean distclean dist
 
 clean:
 	rm -fr out
@@ -47,3 +49,13 @@ out/%: assets/%
 	cp $< $@
 
 build: $(JS_TARGET) out/index.html
+
+dist.zip: $(wildcard out/* out/**/*)
+	cd out; \
+	zip -9 -q -T -ll -X ../dist.zip *; \
+
+dist: dist.zip
+	@ _SIZE=$$(wc -c < dist.zip); \
+		_SIZE_LEFT=$$(( $(DIST_TARGET_SIZE) - $${_SIZE} )); \
+		echo "Bundle size: $${_SIZE} bytes. Up to $${_SIZE_LEFT} bytes left"; \
+		if [ $${_SIZE_LEFT} -lt "0" ]; then exit 1; fi
